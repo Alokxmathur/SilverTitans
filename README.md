@@ -10,7 +10,7 @@ You must install Android Studio if you haven't already done so.
 After installing Android Studio, install git and configure Android Studio with the correct location of git. Also make sure you have the
 android sdk downloaded and updated to the latest version.
 
-If you don't already have done so, create an account on github.com. Once your account is activated, inform coach Alok so he can
+If you don't already have one, create an account on github.com. Once your account is activated, inform coach Alok so he can
 invite you to join the SilverTitans organization so you can commit changes you make.
 
 Now create a new project from Version Control of type git with the url:
