@@ -9,4 +9,8 @@ public class PincherChihuahua extends Dog {
     public void bark() {
         System.out.println("Woof woof woof woof");
     }
+
+    public String getName() {
+        return "I am " + this.name;
+    }
 }

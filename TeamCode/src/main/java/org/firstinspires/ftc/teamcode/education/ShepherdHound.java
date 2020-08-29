@@ -6,6 +6,11 @@ public class ShepherdHound extends Dog {
     }
 
     @Override
+    public String getName() {
+        return "This is " + super.name;
+    }
+
+    @Override
     public void bark() {
         System.out.println("Woof woof woof");
     }

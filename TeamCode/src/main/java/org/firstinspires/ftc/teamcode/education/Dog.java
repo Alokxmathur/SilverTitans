@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.education;
 
-public class Dog {
+public abstract class Dog {
     private static String species="Dog";
 
-    private String name;
+    protected String name;
     private int ageInYears;
 
 
@@ -12,16 +12,12 @@ public class Dog {
         this.ageInYears = ageInYears;
     }
 
-    public String getName() {
-        return this.name;
-    }
+    public abstract String getName();
 
     public int getAgeInYears() {
         return this.ageInYears;
     }
 
-    public void bark() {
-        System.out.println("Woof");
-    }
+    public abstract void bark();
 
 }
