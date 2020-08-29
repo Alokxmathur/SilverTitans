@@ -6,7 +6,15 @@ This repository contains the public FTC App of Silver Titans for the SKYSTONE (2
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
 ## Downloading the Project
-You must install Android Studio if you haven't already done so. Then, creat a new project from Version Control of type git with the url:
+You must install Android Studio if you haven't already done so.
+After installing Android Studio, install git and configure Android Studio with the correct location of git. Also make sure you have the
+android sdk downloaded and updated to the latest version.
+
+If you don't already have one, create an account on github.com. Once your account is activated, inform coach Alok
+of your github user name so he can
+invite you to join the SilverTitans organization so you can commit changes you make.
+
+Now create a new project from Version Control of type git with the url:
 https://github.com/Alokxmathur/SilverTitans.git
 ## Getting Help
 ### User Documentation and Tutorials
