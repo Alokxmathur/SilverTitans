@@ -7,7 +7,7 @@ public class ShepherdHound extends Dog {
 
     @Override
     public String getName() {
-        return "This is " + super.name;
+        return super.name;
     }
 
     @Override

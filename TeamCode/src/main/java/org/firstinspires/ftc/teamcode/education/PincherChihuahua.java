@@ -11,6 +11,7 @@ public class PincherChihuahua extends Dog {
     }
 
     public String getName() {
-        return "I am " + this.name;
+        return this.name;
     }
+
 }

@@ -20,4 +20,8 @@ public abstract class Dog {
 
     public abstract void bark();
 
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
+
 }
