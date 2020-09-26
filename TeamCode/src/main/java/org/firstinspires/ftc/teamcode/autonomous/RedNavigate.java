@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.teamcode.game.Alliance;
 
 /**
@@ -21,7 +23,7 @@ import org.firstinspires.ftc.teamcode.game.Alliance;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name="Red Navigate", group="Phoebe")
-//@Disabled
+@Disabled
 public class RedNavigate extends AutonomousHelperNavigate {
     @Override
     public void init() {

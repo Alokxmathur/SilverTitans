@@ -21,16 +21,16 @@ import java.util.Locale;
 import static org.firstinspires.ftc.teamcode.game.Alliance.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.game.Alliance.Color.RED;
 
-public abstract class AutonomousHelperStones extends AutonomousHelper {
+public abstract class AutonomousHelperStones extends AutonomousHelper2019 {
 
     public void init(Alliance.Color allianceColor) {
         super.init(allianceColor);
     }
 
     public void loop() {
-        if (!initialMovementDone) {
+        if (! initialMovementDone) {
             //initiate Phoebe
-            if (!initialMovementQueued) {
+            if (! initialMovementQueued) {
                 this.queueInitialOperations();
                 initialMovementQueued = true;
             }

@@ -6,11 +6,23 @@ import org.firstinspires.ftc.teamcode.game.Alliance;
 import org.firstinspires.ftc.teamcode.game.Field;
 import org.firstinspires.ftc.teamcode.game.Match;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.components.PickerArm;
 import org.firstinspires.ftc.teamcode.robot.components.drivetrain.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.robot.operations.CameraOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.DriveForDistanceInDirectionOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.DriveForDistanceOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.FoundationGripperOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.GyroscopicBearingOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.PickerOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.StrafeLeftForDistanceWithHeadingOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.StrafeLeftForTimeOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.WaitOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.WaitUntilVuMarkOperation;
+
+import java.util.Locale;
+
+import static org.firstinspires.ftc.teamcode.game.Alliance.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.game.Alliance.Color.RED;
 
 public abstract class AutonomousHelper extends OpMode {
 
@@ -26,19 +38,16 @@ public abstract class AutonomousHelper extends OpMode {
     public static final double START_TO_CLEAR_TAPE = 1.5*Field.TILE_WIDTH;
     public static final double RETRACTION_FROM_QUARRY = 0f*Field.MM_PER_INCH;
 
-    protected double strafeToCenterOnFirstSkyStoneDistance, moveForwardToGatherFirstStone;
     protected boolean initialMovementDone, initialMovementQueued;
-    protected boolean grabbedFirstSkyStone, queuedGrabFirstSkystone;
-    protected boolean reachedBottomStone, queuedReachBottomStone;
-    protected boolean grabbedSecondStone, queuedSecondStoneGrab;
-    protected boolean returnedForSecondStone, queuedReturnForSecondStone;
-    protected boolean positionedForSecondStone, queuedPositionForSecondStone;
-    protected boolean firstStonedDelivered, queuedFirstDelivery;
-    protected boolean firstTapeCleared, queuedFirstTapeClearance;
-    protected boolean firstStonedPlaced, queuedFirstPlacement;
-    protected boolean deliveredSecondStone, queuedSecondStoneDelivery;
-    protected boolean foundationMoved, queuedFoundation;
-    protected double lateralTravel;
+    protected boolean numberOfRingsDetermined, determinationQueued;
+    protected boolean wobbleGoalDeposited, wobbleGoalDepositQueued;
+    protected boolean navigated, navigationQueued;
+
+    int numberOfRingsOnStack;
+    DesiredArea areaToGoTo;
+    public enum DesiredArea {
+        A, B, C
+    }
 
 
     /*
@@ -56,51 +65,44 @@ public abstract class AutonomousHelper extends OpMode {
         AutoTransitioner.transitionOnStop(this, "Phoebe: Driver Controlled");
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
-        if (robot.fullyInitialized()) {
-            //keep looking for the sky stone position in the quarry
-            match.setSkyStonePosition(robot.getSkyStoneLocation());
-            //update driver station with sky stone position
-            telemetry.addData("Alliance", allianceColor);
-            telemetry.addData("Sky stone location", match.getSkyStonePosition());
-            telemetry.addData("Status", "Ready to autonomous");
-            telemetry.addData("Motors", robot.getMotorStatus());
-            telemetry.addData("Picker", robot.getPickerArmStatus());
-            telemetry.update();
+    public void loop() {
+        if (! initialMovementDone) {
+            //initiate Phoebe
+            if (! initialMovementQueued) {
+                this.queueInitialOperations();
+                initialMovementQueued = true;
+            }
+            initialMovementDone = robot.primaryOperationsCompleted();
         }
-        else {
-            telemetry.addData("status", "Waiting for vuForia to finish, please wait");
-            telemetry.update();
+        else if (!numberOfRingsDetermined) {
+            if (!determinationQueued) {
+                Match.log("Determining number of rings");
+                queueRingDetermination();
+                determinationQueued = true;
+            }
+            numberOfRingsDetermined = robot.operationsCompleted();
         }
-    }
-
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
-        match.setStart();
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
-        this.robot.stop();
-    }
-
-    public Alliance.Color getAlliance() {
-        return allianceColor;
+        else if (!wobbleGoalDeposited) {
+            if (!wobbleGoalDepositQueued) {
+                Match.log("Depositing wobble goal");
+                queueWobbleGoalDeposit();
+                wobbleGoalDepositQueued = true;
+            }
+            wobbleGoalDeposited = robot.operationsCompleted();
+        }
+        else if (!navigated) {
+            if (!navigationQueued) {
+                Match.log("Navigating");
+                queueNavigation();
+                navigationQueued = true;
+            }
+            navigated = robot.operationsCompleted();
+        }
     }
 
     /**
-     * Turn on led lights, lower the foundation gripper and
-     * get gripper to hover position and open it
+     * Turn on led lights, lower the foundation gripper on tertiary thread
+     * Get gripper to hover position and open it on secondary thread
      *
      * We do all of this in on the secondary thread so that we don't have to wait for them to
      * complete before reaching the bottom sky stone
@@ -112,23 +114,24 @@ public abstract class AutonomousHelper extends OpMode {
         //lower foundation gripper so camera can see
         robot.queueTertiaryOperation(new FoundationGripperOperation(FoundationGripperOperation.OperationType.LOWER, "Lower foundation gripper"));
 
-        //queue following operations on tertiary thread
+        //queue following operations on secondary thread
         //get gripper to hover position
         robot.queueSecondaryOperation(new PickerOperation(PickerOperation.PickerOperationType.HOVER, "Gripper to hover"));
         robot.queueSecondaryOperation(new PickerOperation(PickerOperation.PickerOperationType.OPEN_GRIPPER, "Open gripper"));
     }
 
-
-    protected void flash() {
-        //turn off flash
-        robot.queueSecondaryOperation(new CameraOperation(CameraOperation.CameraOperationType.FLASH_OFF, "Turn off flash"));
-        //wait
-        robot.queueSecondaryOperation(new WaitOperation(1000, "Flash"));
-        //turn on flash
-        robot.queueSecondaryOperation(new CameraOperation(CameraOperation.CameraOperationType.FLASH_ON, "Turn on flash"));
-        //wait
-        robot.queueSecondaryOperation(new WaitOperation(1000, "Flash"));
-        //turn off flash
-        robot.queueSecondaryOperation(new CameraOperation(CameraOperation.CameraOperationType.FLASH_OFF, "Turn off flash"));
+    protected void queueRingDetermination() {
+        numberOfRingsOnStack = (int) (Math.random() * 3);
     }
+
+    protected void queueWobbleGoalDeposit() {
+        robot.queuePrimaryOperation(
+                new DriveForDistanceOperation(4*Field.TILE_WIDTH, 0.5, "Move to the right square"));
+    }
+
+    protected void queueNavigation() {
+        robot.queuePrimaryOperation(
+                new DriveForDistanceOperation(-1*Field.TILE_WIDTH, 0.5, "Navigate"));
+    }
+
 }
