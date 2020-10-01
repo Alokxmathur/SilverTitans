@@ -33,11 +33,11 @@ public abstract class AutonomousHelper extends OpMode {
     protected double headingToFoundation;
 
     public static final long VUFORIA_SETTLING_TIME = 2500; //msecs for vuforia to see image
-    public static final double STARTING_POSITION = Field.TILE_WIDTH + MecanumDriveTrain.DRIVE_TRAIN_WIDTH/2;
+    public static final double STARTING_POSITION = Field.TILE_WIDTH + MecanumDriveTrain.DRIVE_TRAIN_WIDTH / 2;
     public static final double CAUTIOUS_SPEED = 0.6;
     public static final double FAST_SPEED = 1.0;
-    public static final double START_TO_CLEAR_TAPE = 1.5*Field.TILE_WIDTH;
-    public static final double RETRACTION_FROM_QUARRY = 0f*Field.MM_PER_INCH;
+    public static final double START_TO_CLEAR_TAPE = 1.5 * Field.TILE_WIDTH;
+    public static final double RETRACTION_FROM_QUARRY = 0f * Field.MM_PER_INCH;
 
     protected boolean initialMovementDone, initialMovementQueued;
     protected boolean numberOfRingsDetermined, determinationQueued;
@@ -46,6 +46,7 @@ public abstract class AutonomousHelper extends OpMode {
 
     int numberOfRingsOnStack;
     DesiredArea areaToGoTo;
+
     public enum DesiredArea {
         A, B, C
     }
@@ -61,37 +62,34 @@ public abstract class AutonomousHelper extends OpMode {
         match.setAlliance(allianceColor);
         this.robot = match.getRobot();
         this.robot.init(hardwareMap, telemetry, match, allianceColor);
-        headingToFoundation =  allianceColor == Alliance.Color.BLUE ? 90 : -90;
+        headingToFoundation = allianceColor == Alliance.Color.BLUE ? 90 : -90;
 
         AutoTransitioner.transitionOnStop(this, "Phoebe: Driver Controlled");
     }
 
     public void loop() {
-        if (! initialMovementDone) {
+        if (!initialMovementDone) {
             //initiate Phoebe
-            if (! initialMovementQueued) {
+            if (!initialMovementQueued) {
                 this.queueInitialOperations();
                 initialMovementQueued = true;
             }
             initialMovementDone = robot.primaryOperationsCompleted();
-        }
-        else if (!numberOfRingsDetermined) {
+        } else if (!numberOfRingsDetermined) {
             if (!determinationQueued) {
                 Match.log("Determining number of rings");
                 queueRingDetermination();
                 determinationQueued = true;
             }
             numberOfRingsDetermined = robot.operationsCompleted();
-        }
-        else if (!wobbleGoalDeposited) {
+        } else if (!wobbleGoalDeposited) {
             if (!wobbleGoalDepositQueued) {
                 Match.log("Depositing wobble goal");
                 queueWobbleGoalDeposit();
                 wobbleGoalDepositQueued = true;
             }
             wobbleGoalDeposited = robot.operationsCompleted();
-        }
-        else if (!navigated) {
+        } else if (!navigated) {
             if (!navigationQueued) {
                 Match.log("Navigating");
                 queueNavigation();
@@ -104,7 +102,7 @@ public abstract class AutonomousHelper extends OpMode {
     /**
      * Turn on led lights, lower the foundation gripper on tertiary thread
      * Get gripper to hover position and open it on secondary thread
-     *
+     * <p>
      * We do all of this in on the secondary thread so that we don't have to wait for them to
      * complete before reaching the bottom sky stone
      */
@@ -131,16 +129,19 @@ public abstract class AutonomousHelper extends OpMode {
     protected void queueWobbleGoalDeposit() {
         if (numberOfRingsOnStack == 0) {
             robot.queuePrimaryOperation(
-            new DriveForDistanceOperation(3*Field.TILE_WIDTH, 0.5, "Move to the right square"));
+                    new DriveForDistanceOperation(3 * Field.TILE_WIDTH, 0.5, "Move to the right square"));
             robot.queuePrimaryOperation(
-                    new StrafeLeftForDistanceOperation(-1*Field.TILE_WIDTH, .5, "strafe into the right box")
+                    new StrafeLeftForDistanceOperation(-1 * Field.TILE_WIDTH, .5, "strafe into the right box")
             );
+        } else if (numberOfRingsOnStack == 1) {
+            robot.queuePrimaryOperation(
+                    new DriveForDistanceOperation(4 * Field.TILE_WIDTH, 0.5, "Move to the right square"));
         }
     }
 
     protected void queueNavigation() {
         robot.queuePrimaryOperation(
-                new DriveForDistanceOperation(-1*Field.TILE_WIDTH, 0.5, "Navigate"));
+                new DriveForDistanceOperation(-1 * Field.TILE_WIDTH, 0.5, "Navigate"));
     }
 
 }
