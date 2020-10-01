@@ -31,7 +31,7 @@ public abstract class AutonomousHelper extends OpMode {
     protected Alliance.Color allianceColor;
     protected double headingToFoundation;
 
-    public static final long VUFORIA_SETTLING_TIME = 1500; //msecs for vuforia to see image
+    public static final long VUFORIA_SETTLING_TIME = 2500; //msecs for vuforia to see image
     public static final double STARTING_POSITION = Field.TILE_WIDTH + MecanumDriveTrain.DRIVE_TRAIN_WIDTH/2;
     public static final double CAUTIOUS_SPEED = 0.6;
     public static final double FAST_SPEED = 1.0;
