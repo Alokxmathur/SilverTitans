@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.operations.DriveForDistanceOperation
 import org.firstinspires.ftc.teamcode.robot.operations.FoundationGripperOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.GyroscopicBearingOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.PickerOperation;
+import org.firstinspires.ftc.teamcode.robot.operations.StrafeLeftForDistanceOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.StrafeLeftForDistanceWithHeadingOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.StrafeLeftForTimeOperation;
 import org.firstinspires.ftc.teamcode.robot.operations.WaitOperation;
@@ -128,8 +129,13 @@ public abstract class AutonomousHelper extends OpMode {
     }
 
     protected void queueWobbleGoalDeposit() {
-        robot.queuePrimaryOperation(
-                new DriveForDistanceOperation(4*Field.TILE_WIDTH, 0.5, "Move to the right square"));
+        if (numberOfRingsOnStack == 0) {
+            robot.queuePrimaryOperation(
+            new DriveForDistanceOperation(3*Field.TILE_WIDTH, 0.5, "Move to the right square"));
+            robot.queuePrimaryOperation(
+                    new StrafeLeftForDistanceOperation(-1*Field.TILE_WIDTH, .5, "strafe into the right box")
+            );
+        }
     }
 
     protected void queueNavigation() {
