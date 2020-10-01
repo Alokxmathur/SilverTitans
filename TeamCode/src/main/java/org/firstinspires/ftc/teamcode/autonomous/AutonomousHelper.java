@@ -122,6 +122,9 @@ public abstract class AutonomousHelper extends OpMode {
 
     protected void queueRingDetermination() {
         numberOfRingsOnStack = (int) (Math.random() * 3);
+        if (numberOfRingsOnStack == 2) {
+            numberOfRingsOnStack = 4;
+        }
     }
 
     protected void queueWobbleGoalDeposit() {
