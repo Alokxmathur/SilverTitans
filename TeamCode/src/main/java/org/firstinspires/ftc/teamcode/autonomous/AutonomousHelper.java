@@ -127,21 +127,40 @@ public abstract class AutonomousHelper extends OpMode {
     }
 
     protected void queueWobbleGoalDeposit() {
+        double forwardMovement = 0, rightMovement = 0;
         if (numberOfRingsOnStack == 0) {
-            robot.queuePrimaryOperation(
-                    new DriveForDistanceOperation(3 * Field.TILE_WIDTH, 0.5, "Move to the right square"));
-            robot.queuePrimaryOperation(
-                    new StrafeLeftForDistanceOperation(-1 * Field.TILE_WIDTH, .5, "strafe into the right box")
-            );
-        } else if (numberOfRingsOnStack == 1) {
-            robot.queuePrimaryOperation(
-                    new DriveForDistanceOperation(4 * Field.TILE_WIDTH, 0.5, "Move to the right square"));
+            forwardMovement = 3 * Field.TILE_WIDTH;
+            rightMovement = 1 * Field.TILE_WIDTH;
         }
+        if (numberOfRingsOnStack == 0) {
+            forwardMovement = 4 * Field.TILE_WIDTH;
+            rightMovement = 0 * Field.TILE_WIDTH;
+        }
+        if (numberOfRingsOnStack == 0) {
+            forwardMovement = 5 * Field.TILE_WIDTH;
+            rightMovement = 1 * Field.TILE_WIDTH;
+        }
+
+        robot.queuePrimaryOperation(
+                new DriveForDistanceOperation(forwardMovement, 0.5, "Move to the right square"));
+        robot.queuePrimaryOperation(
+                new StrafeLeftForDistanceOperation(-rightMovement, 0.5, "strafe into the right box"));
     }
 
     protected void queueNavigation() {
+        double forwardMovement = 0, rightMovement = 0;
+        if (numberOfRingsOnStack == 0) {
+            forwardMovement = 0 * Field.TILE_WIDTH;
+        }
+        if (numberOfRingsOnStack == 0) {
+            forwardMovement = 1 * Field.TILE_WIDTH;
+        }
+        if (numberOfRingsOnStack == 0) {
+            forwardMovement = 2 * Field.TILE_WIDTH;
+        }
+
         robot.queuePrimaryOperation(
-                new DriveForDistanceOperation(-1 * Field.TILE_WIDTH, 0.5, "Navigate"));
+                new DriveForDistanceOperation(-forwardMovement, 0.5, "Navigate"));
     }
 
 }
