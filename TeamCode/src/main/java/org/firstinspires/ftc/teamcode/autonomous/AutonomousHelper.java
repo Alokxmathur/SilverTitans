@@ -148,14 +148,14 @@ public abstract class AutonomousHelper extends OpMode {
     }
 
     protected void queueNavigation() {
-        double forwardMovement = 0, rightMovement = 0;
+        double forwardMovement = 0;
         if (numberOfRingsOnStack == 0) {
             forwardMovement = 0 * Field.TILE_WIDTH;
         }
-        if (numberOfRingsOnStack == 0) {
+        if (numberOfRingsOnStack == 1) {
             forwardMovement = 1 * Field.TILE_WIDTH;
         }
-        if (numberOfRingsOnStack == 0) {
+        if (numberOfRingsOnStack == 4) {
             forwardMovement = 2 * Field.TILE_WIDTH;
         }
 
